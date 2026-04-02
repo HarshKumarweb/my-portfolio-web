@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #0a0f1c;
+    color: #dbeafe;
+    line-height: 1.6;
+}
+
+/* Layout */
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+header h1 {
+    color: #60a5fa;
+    font-size: 2.5rem;
+}
+
+/* Panel */
+.panel {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+}
+
+/* Links */
+a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Fade Animation */
+.fade {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: all 0.7s ease;
+}
+
+.fade.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #94a3b8;
+}
+
+/* Responsive */
+@media(max-width: 600px) {
+    header h1 {
+        font-size: 2rem;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="fade">
+    <h1>Terms of Service</h1>
+    <p>Please read carefully before using this website</p>
+</header>
+
+<div class="container">
+
+    <div class="panel fade">
+        <h2>1. Acceptance of Terms</h2>
+        <p>
+            By accessing and using this website, you agree to comply with these Terms of Service.
+            If you do not agree, you should not use this website.
+        </p>
+    </div>
+
+    <div class="panel fade">
+        <h2>2. Data Collection</h2>
+        <p>
+            We collect limited information for analytics and security purposes.
+            This includes your IP address, browser information, and basic device data.
+        </p>
+        <p>
+            Your IP address is collected only after you explicitly accept our Terms of Service
+            through the consent popup on the main website.
+        </p>
+    </div>
+
+    <div class="panel fade">
+        <h2>3. Purpose of Data Usage</h2>
+        <p>
+            The collected data is used for:
+        </p>
+        <ul>
+            <li>Website analytics</li>
+            <li>Improving user experience</li>
+            <li>Security and abuse prevention</li>
+        </ul>
+    </div>
+
+    <div class="panel fade">
+        <h2>4. Data Storage</h2>
+        <p>
+            Your data may be stored securely using third-party services such as cloud databases.
+            Reasonable steps are taken to protect your information.
+        </p>
+    </div>
+
+    <div class="panel fade">
+        <h2>5. User Responsibility</h2>
+        <p>
+            You agree not to misuse this website or attempt to exploit its functionality.
+        </p>
+    </div>
+
+    <div class="panel fade">
+        <h2>6. Changes to Terms</h2>
+        <p>
+            These Terms may be updated at any time. Continued use of the website
+            means you accept the updated Terms.
+        </p>
+    </div>
+
+    <div class="panel fade">
+        <h2>7. Contact</h2>
+        <p>
+            For any questions, contact the site owner on discord <br> <b> Username: @skittle9438 </b>
+        </p>
+    </div>
+
+    <div class="panel fade">
+        <a href="index.html">← Back to Home</a>
+    </div>
+
+</div>
+
+<footer class="fade">
+    <p>© 2026 My Portfolio</p>
+</footer>
+
+<script>
+// Fade-in animation
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+        }
+    });
+}, { threshold: 0.15 });
+
+document.querySelectorAll(".fade").forEach(el => {
+    observer.observe(el);
+});
+</script>
+
+</body>
+</html>

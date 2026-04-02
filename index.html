@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Portfolio</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:#0a0f1c;color:#dbeafe;}
+
+.container{max-width:1100px;margin:auto;padding:20px;}
+
+header{text-align:center;padding:50px 20px;}
+header h1{color:#60a5fa;font-size:2.5rem;}
+
+.panel{
+background:#111827;
+border:1px solid #1f2937;
+border-radius:12px;
+padding:25px;
+margin:20px 0;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
+}
+
+.card{
+background:#020617;
+border:1px solid #1e293b;
+padding:15px;
+border-radius:10px;
+text-align:center;
+transition:0.25s;
+}
+.card:hover{
+transform:translateY(-5px);
+border-color:#3b82f6;
+}
+
+.fade{
+opacity:0;
+transform:translateY(30px);
+transition:0.8s;
+}
+.fade.show{
+opacity:1;
+transform:translateY(0);
+}
+
+/* Popup */
+#tosPopup{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.9);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+
+.tos-box{
+background:#111827;
+border:1px solid #3b82f6;
+padding:25px;
+border-radius:12px;
+width:90%;
+max-width:420px;
+}
+
+.tos-box input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #1f2937;
+background:#020617;
+color:white;
+}
+
+.error{
+color:#ef4444;
+font-size:13px;
+display:none;
+}
+
+button{
+padding:10px 16px;
+border:none;
+border-radius:6px;
+margin:5px;
+cursor:pointer;
+}
+
+.accept{background:#3b82f6;color:white;}
+.deny{background:#1f2937;color:white;}
+
+footer{
+text-align:center;
+padding:20px;
+color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<!-- POPUP -->
+<div id="tosPopup">
+<div class="tos-box">
+<h2>Welcome</h2>
+<p>Enter username and accept <a href="tos.html" style="color:#3b82f6;">TOS</a></p>
+
+<input type="text" id="discordInput" placeholder="Discord Username">
+<div class="error" id="errorText">Please enter username</div>
+
+<button class="accept" onclick="acceptTOS()">Accept</button>
+<button class="deny" onclick="denyTOS()">Deny</button>
+</div>
+</div>
+
+<header class="fade">
+<h1>My Portfolio</h1>
+<p>Clean. Simple. Functional.</p>
+</header>
+
+<div class="container">
+
+<div class="panel fade">
+<h2>About Me</h2>
+<p>I develop Minecraft plugins and modern web apps using Java, Paper API, and Firebase.</p>
+</div>
+
+<div class="panel fade">
+<h2>Skills</h2>
+<div class="grid">
+<div class="card">Java</div>
+<div class="card">Paper API</div>
+<div class="card">Firebase</div>
+<div class="card">Web Dev</div>
+</div>
+</div>
+
+<div class="panel fade">
+<h2>Projects</h2>
+<div class="grid">
+<div class="card">Shop Plugin</div>
+<div class="card">Chat App</div>
+<div class="card">Server Systems</div>
+</div>
+</div>
+
+</div>
+
+<footer class="fade">
+<p>© 2026 My Portfolio</p>
+</footer>
+
+<script>
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyA0-LsRe3bmLMsguvsG81bPvoD0FEbz8Q4",
+  authDomain: "schoolclosure-554b4.firebaseapp.com",
+  databaseURL: "https://schoolclosure-554b4-default-rtdb.firebaseio.com",
+  projectId: "schoolclosure-554b4",
+  storageBucket: "schoolclosure-554b4.firebasestorage.app",
+  messagingSenderId: "491969863737",
+  appId: "1:491969863737:web:458a00e13e732adffeade8"
+};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+
+// ---------- COOKIE SYSTEM (FIXED) ----------
+function setCookie(name,value,days){
+const date=new Date();
+date.setTime(date.getTime()+(days*24*60*60*1000));
+document.cookie=name+"="+encodeURIComponent(value)+";expires="+date.toUTCString()+";path=/;SameSite=Lax";
+}
+
+function getCookie(name){
+const cookies=document.cookie.split(';');
+for(let c of cookies){
+let [key,val]=c.trim().split('=');
+if(key===name) return decodeURIComponent(val);
+}
+return null;
+}
+
+// ---------- INIT ----------
+window.addEventListener("load", async ()=>{
+const username=getCookie("visitor_username");
+
+if(username){
+document.getElementById("tosPopup").style.display="none";
+await updateVisit(username);
+}
+});
+
+// ---------- ACCEPT ----------
+async function acceptTOS(){
+const input=document.getElementById("discordInput").value.trim();
+const error=document.getElementById("errorText");
+
+if(!input){
+error.style.display="block";
+return;
+}
+
+error.style.display="none";
+
+const username=input.replace(/[^a-zA-Z0-9#._-]/g,"").substring(0,40);
+
+// Set cookie FIRST
+setCookie("visitor_username",username,365);
+
+document.getElementById("tosPopup").style.display="none";
+
+try{
+const ip=await getIP();
+
+await db.collection("visitors").add({
+discordUsername:username,
+ip:ip,
+firstVisit:firebase.firestore.FieldValue.serverTimestamp(),
+lastVisit:firebase.firestore.FieldValue.serverTimestamp(),
+visits:1,
+userAgent:navigator.userAgent
+});
+
+}catch(e){
+console.error("Firestore error:",e);
+}
+}
+
+// ---------- UPDATE VISIT ----------
+async function updateVisit(username){
+try{
+const snapshot=await db.collection("visitors")
+.where("discordUsername","==",username)
+.get();
+
+const ip=await getIP();
+
+snapshot.forEach(doc=>{
+doc.ref.update({
+lastVisit:firebase.firestore.FieldValue.serverTimestamp(),
+visits:firebase.firestore.FieldValue.increment(1),
+ip:ip
+});
+});
+
+}catch(e){
+console.error("Update error:",e);
+}
+}
+
+// ---------- DENY ----------
+function denyTOS(){
+window.location.href="denied.html";
+}
+
+// ---------- IP ----------
+async function getIP(){
+try{
+const res=await fetch("https://api.ipify.org?format=json");
+const data=await res.json();
+return data.ip;
+}catch{
+return "unknown";
+}
+}
+
+// ---------- FADE ----------
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting) entry.target.classList.add("show");
+});
+},{threshold:0.15});
+
+document.querySelectorAll(".fade").forEach(el=>observer.observe(el));
+</script>
+
+</body>
+</html>
